@@ -16,4 +16,3 @@
        (all* (cljs.core/clj->js [~@output-exprs]))
        (fn [[~@binding-forms]]
          ~@body))))
-

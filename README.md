@@ -1,5 +1,14 @@
 # pulumi-cljs
 
+Forked from Modern Energy's [pulumi-cljs](https://github.com/modern-energy/pulumi-cljs)
+
+Differences:
+* `p/resource` matches underlying pulumi resource constructors.
+* `p/cfg` handles Pulumi namespaced config values as you'd expect.
+* `p/str` does what Pulumi's `concat` does.
+* `p/prepare-output` preserves clojure keyword namespaces.
+* Removed AWS specific Clojure namespaces
+
 This is a small wrapper library making it easier to use ClojureScript
 to write Infrastructure As Code via [Pulumi's](https://pulumi.com)
 NodeJS API.
@@ -68,4 +77,3 @@ a JavaScript object so it can be returned as stack outputs.
 See the `examples/hello-world` for a simple project, or the example
 [Wordpress Deployment](https://github.com/modern-energy/wordpress-pulumi-cljs)
 for a more complex stack.
-
