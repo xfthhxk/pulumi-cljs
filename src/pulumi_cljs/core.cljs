@@ -3,7 +3,9 @@
    Adapted from https://github.com/modern-energy/pulumi-cljs."
   (:require ["@pulumi/pulumi" :as p]
             [clojure.walk :as walk]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [goog.object])
+  (:require-macros [pulumi-cljs.core])
   (:refer-clojure :exclude [apply str]))
 
 (def ^:dynamic *default-output-keys* #{:id :urn})
@@ -84,13 +86,11 @@
   p/Resource
   (-lookup
     ([o k]
-     (let [k (clj->js k)]
-       (if-let [v (aget o k)]
-         v
-         (throw (ex-info (clojure.core/str "Resource does not have property or output with key " k)
-                         {:key k})))))
+     (if-some [v (goog.object/get o (clj->js k))]
+       v
+       (throw (ex-info "No such key in Resource" {:key k}))))
     ([o k not-found]
-     (if-let [v (aget o (clj->js k))]
+     (if-some [v (goog.object/get o (clj->js k))]
        v
        not-found))))
 
@@ -113,8 +113,7 @@
   (clj->js
    (walk/prewalk (fn [form]
                    (if (instance? p/Resource form)
-                     {:urn (:urn form)
-                      :id (:id form)}
+                     (output->map form)
                      form))
                  output)
    :keyword-fn (fn [k]

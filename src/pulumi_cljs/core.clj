@@ -18,29 +18,33 @@
          ~@body))))
 
 (defmacro defresource
-  ([{:keys [sym type name args opts]}]
+  "Convenience macro.
+  * avoid having to specify a name which almost always is the same as the var
+  * avoid having to call `pulumi-cljs.core/resource`
+  `sym` is a symbol, ie the name of the var which will be `def`ed
+  `type` is a resource name ie `gcp/storage.Bucket`
+  `name` is a string or string returning expr (usually unnecessary)
+  `args` is a map or map returning expr
+  `opts` is a map or map returning expr"
+  ([{:keys [sym type name args opts] :as m}]
+   (assert (map? m) "expected single map arg")
    (assert (simple-symbol? sym) (str sym "must be a simple symbol"))
    `(def ~sym
       (pulumi-cljs.core/resource ~type ~name ~args ~opts)))
   ([sym type]
    (let [m {:sym sym :type type :name (name sym) :args {} :opts {}}]
      `(defresource ~m)))
-  ([sym type name-or-args]
-   (let [name? (string? name-or-args)
-         args? (and (not name?) (map? name-or-args))
-         m (cond-> {:sym sym :type type}
-             name? (assoc :name name-or-args)
-             args? (assoc :args name-or-args))]
+  ([sym type args]
+   (assert (map? args) "args must be a map")
+   (let [m {:sym sym :type type :name (name sym) :args args :opts {}}]
      `(defresource ~m)))
-  ([sym type name-or-args args-or-opts]
-   (let [name? (string? name-or-args)
-         args? (and (not name?) (map? name-or-args))
-         opts? (and args? (map? args-or-opts))
-         m (cond-> {:sym sym :type type}
-             name? (assoc :name name-or-args)
-             args? (assoc :args name-or-args)
-             opts? (assoc :opts args-or-opts))]
+  ([sym type args opts]
+   (assert (map? args) "args must be a map")
+   (assert (map? opts) "args must be a opts")
+   (let [m {:sym sym :type type :name (name sym) :args args :opts opts}]
      `(defresource ~m)))
   ([sym type name args opts]
+   (assert (map? args) "args must be a map")
+   (assert (map? opts) "args must be a opts")
    (let [m {:sym sym :type type :name name :args args :opts opts}]
      `(defresource ~m))))
