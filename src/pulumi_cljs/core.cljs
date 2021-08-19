@@ -6,6 +6,8 @@
             [clojure.string :as str])
   (:refer-clojure :exclude [apply str]))
 
+(def ^:dynamic *default-output-keys* #{:id :urn})
+
 (defn resource
   "Create a Pulumi resource"
   ([type name] (resource type name {} {}))
@@ -91,6 +93,17 @@
      (if-let [v (aget o (clj->js k))]
        v
        not-found))))
+
+(defn output->map
+  ([^p/Resource output] (output->map output *default-output-keys*))
+  ([^p/Resource output & more-keys-or-coll]
+   (let [ks (if (coll? (first more-keys-or-coll))
+              (first more-keys-or-coll)
+              more-keys-or-coll)
+         ks (into (set ks) *default-output-keys*)]
+     (->> ks
+          (mapv (fn [k] [k (k output)]))
+          (into {})))))
 
 (defn prepare-output
   "Walk a data structure and replace all Resource objects with a map

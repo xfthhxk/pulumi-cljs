@@ -4,6 +4,7 @@ Forked from Modern Energy's [pulumi-cljs](https://github.com/modern-energy/pulum
 
 Differences:
 * `p/resource` matches underlying pulumi resource constructors.
+* `defresource` macro
 * `p/cfg` handles Pulumi namespaced config values as you'd expect.
 * `p/str` does what Pulumi's `concat` does.
 * `p/prepare-output` preserves clojure keyword namespaces.
