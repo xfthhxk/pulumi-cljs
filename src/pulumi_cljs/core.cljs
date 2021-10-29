@@ -4,6 +4,7 @@
   (:require ["@pulumi/pulumi" :as p]
             [clojure.walk :as walk]
             [clojure.string :as str]
+            [cljs.pprint]
             [goog.object])
   (:require-macros [pulumi-cljs.core])
   (:refer-clojure :exclude [apply str]))
@@ -62,25 +63,15 @@
          config (load-cfg -ns)
          {get-fn :get
           require-fn :require} (config-type->fns val-type :string)
-         val (if (= default ::required)
-               (require-fn config -key)
-               (get-fn config -key))]
-     (or val default))))
-
-(defn cfg-obj
-  "Retrieve a data structure value from the Pulumi configuration for the
-  current project, converting data structures to Clojure data.
-
-  If the key is missing, throws an error unless a default value is supplied."
-  ([key] (cfg-obj key ::required))
-  ([key default]
-   (let [config (load-cfg)
-         val (if (= default ::required)
-               (.requireObject ^p/Config config key)
-               (.getObject ^p/Config config key))]
-     (if val
-       (js->clj val :keywordize-keys true)
-       default))))
+         val (cond
+               (instance? p/Output default) val
+               (= default ::required) (require-fn config -key)
+               :else (get-fn config -key))
+         ;; deal with booleans
+         val (if (some? val) val default)]
+     (if (= :object val-type)
+       (some-> val (js->clj :keywordize-keys true))
+       val))))
 
 (extend-protocol ILookup
   p/Resource
@@ -126,6 +117,25 @@
   Pulumi Output values"
   [data]
   (.apply (p/output (clj->js data)) #(js/JSON.stringify %)))
+
+
+(defn- keyword->name
+  "keeps the namespace"
+  [^clojure.lang.Keyword k]
+  (.-fqn k))
+
+
+(defn quasi-edn
+  "Preserves keyword keys but values are lossy because of
+  having to go through clj->js conversion."
+  [data]
+  (-> data
+      (clj->js :keyword-fn keyword->name)
+      p/output
+      (.apply (fn [js-object]
+                (with-out-str
+                  (cljs.pprint/pprint
+                   (js->clj js-object :keywordize-keys true)))))))
 
 (defn group
   "Create a Component Resource to group together other sets of resources"
