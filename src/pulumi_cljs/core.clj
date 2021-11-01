@@ -40,11 +40,11 @@
      `(defresource ~m)))
   ([sym type args opts]
    (assert (map? args) "args must be a map")
-   (assert (map? opts) "args must be a opts")
+   (assert (map? opts) "opts must be a map")
    (let [m {:sym sym :type type :name (name sym) :args args :opts opts}]
      `(defresource ~m)))
   ([sym type name args opts]
    (assert (map? args) "args must be a map")
-   (assert (map? opts) "args must be a opts")
+   (assert (map? opts) "opts must be a map")
    (let [m {:sym sym :type type :name name :args args :opts opts}]
      `(defresource ~m))))
