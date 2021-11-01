@@ -34,12 +34,12 @@
   "Convert a numeric into an IP string"
   [n]
   (let [n (js/BigInt n)
-        mask (js/BigInt "0xFF")]
-    (let [p4 (bit-and n mask)
-          p3 (bit-and (bit-shift-right n (js/BigInt 8)) mask)
-          p2 (bit-and (bit-shift-right n (js/BigInt 16)) mask)
-          p1 (bit-and (bit-shift-right n (js/BigInt 24)) mask)]
-      (str p1 "." p2 "." p3 "." p4))))
+        mask (js/BigInt "0xFF")
+        p4 (bit-and n mask)
+        p3 (bit-and (bit-shift-right n (js/BigInt 8)) mask)
+        p2 (bit-and (bit-shift-right n (js/BigInt 16)) mask)
+        p1 (bit-and (bit-shift-right n (js/BigInt 24)) mask)]
+    (str p1 "." p2 "." p3 "." p4)))
 
 (def cidr-re (js/RegExp "(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})/(\\d{1,2})"))
 

@@ -40,7 +40,7 @@
    :boolean {:get (fn [^p/Config cfg key] (.getBoolean cfg key))
             :require (fn [^p/Config cfg key] (.requireBoolean cfg key))}
    :object {:get (fn [^p/Config cfg key] (.getObject cfg key))
-             :require (fn [^p/Config cfg key] (.requireObject cfg key))}
+            :require (fn [^p/Config cfg key] (.requireObject cfg key))}
    :secret {:get (fn [^p/Config cfg key] (.getSecret cfg key))
             :require (fn [^p/Config cfg key] (.requireSecret cfg key))}})
 

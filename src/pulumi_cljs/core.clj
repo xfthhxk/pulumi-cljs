@@ -10,8 +10,8 @@
   functions."
   [bindings & body]
   (let [binding-pairs (partition 2 bindings)
-       binding-forms (map first binding-pairs)
-       output-exprs (map second binding-pairs)]
+        binding-forms (map first binding-pairs)
+        output-exprs (map second binding-pairs)]
     `(.apply
        (all* (cljs.core/clj->js [~@output-exprs]))
        (fn [[~@binding-forms]]
@@ -40,11 +40,11 @@
      `(defresource ~m)))
   ([sym type args opts]
    (assert (map? args) "args must be a map")
-   (assert (map? opts) "args must be a opts")
+   (assert (map? opts) "opts must be a map")
    (let [m {:sym sym :type type :name (name sym) :args args :opts opts}]
      `(defresource ~m)))
   ([sym type name args opts]
    (assert (map? args) "args must be a map")
-   (assert (map? opts) "args must be a opts")
+   (assert (map? opts) "opts must be a map")
    (let [m {:sym sym :type type :name name :args args :opts opts}]
      `(defresource ~m))))
